@@ -3,7 +3,7 @@ const { User } = require("../models/user");
 const Token = require("../models/token");
 const crypto = require("crypto");
 const sendEmail = require("../utils/sendEmail");
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Joi = require("joi");
 require("dotenv").config();
@@ -39,7 +39,10 @@ router.post("/", async (req, res) => {
       }
       return res
         .status(400)
-        .send({ message: "An Email sent to your account. Please verify." });
+        .send({
+          message:
+            "An email has been sent to the admin. Please wait for approval.",
+        });
     }
     const token = jwt.sign({ id: user._id }, process.env.JWTPRIVATEKEY, {
       expiresIn: "1h",
