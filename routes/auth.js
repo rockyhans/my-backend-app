@@ -54,6 +54,36 @@ router.post("/", async (req, res) => {
   }
 });
 
+
+router.get("/getUser", async (req, res) => {
+  try {
+    const token = req.header("Authorization");
+    if (!token) {
+      return res.status(401).send({ message: "Access Denied. No token provided." });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWTPRIVATEKEY);
+    console.log(decoded); // Log the decoded token for debugging
+
+    if (!decoded || !decoded.id) {
+      return res.status(400).send({ message: "Invalid token." });
+    }
+
+    const user = await User.findById(decoded.id).select("firstName lastName email");
+
+    if (!user) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    res.status(200).send(user);
+  } catch (error) {
+    console.error(error);  // Log the error to server console for debugging
+    res.status(500).send({ message: "Something went wrong", error: error.message });
+  }
+});
+
+
+
 const validate = (data) => {
   const schema = Joi.object({
     email: Joi.string().email().required().label("Email"),
